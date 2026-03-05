@@ -1,6 +1,4 @@
-"""
-experiments.py — Expériences, comparaisons et visualisations
-"""
+
 
 import numpy as np
 import matplotlib
@@ -380,11 +378,7 @@ def visualize_grid_path(grid, path, start, goal, epsilon=0.1, title="Grille et c
 # ---------------------------------------------------------------------------
 
 def experiment_heuristic_comparison(grid, start, goal, name="exp_e3"):
-    """
-    Compare h=0 (UCS / heuristique nulle) vs h=Manhattan vs h=Euclidean
-    sur la même grille, en mesurant le nombre de nœuds développés,
-    la taille max de OPEN et le coût du chemin trouvé.
-    """
+
     print(f"\n{'='*55}")
     print(f"  E.3 Comparaison heuristiques — {name}")
     print(f"  Grille {len(grid)}x{len(grid[0])}, start={start}, goal={goal}")

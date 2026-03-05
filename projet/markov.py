@@ -1,6 +1,4 @@
-"""
-markov.py — Chaînes de Markov induites par une politique sur grille
-"""
+
 
 import numpy as np
 from typing import Dict, List, Tuple, Optional
@@ -25,24 +23,7 @@ def build_transition_matrix(
     include_fail: bool = False,
     fail_cells: Optional[set] = None,
 ) -> Tuple[np.ndarray, List]:
-    """
-    Construit la matrice de transition stochastique P sur les états accessibles.
 
-    Modèle d'incertitude (paramètre epsilon) :
-        - l'agent suit l'action recommandée avec proba (1 - epsilon)
-        - il dévie vers un voisin latéral (perpendiculaire) avec proba epsilon/2 chacun
-        - si la cellule cible est un obstacle ou hors-grille, l'agent reste sur place
-
-    États :
-        - cellules libres visitables selon la politique
-        - GOAL (absorbant)
-        - FAIL (absorbant, optionnel)
-
-    Returns
-    -------
-    P   : ndarray shape (n_states, n_states)
-    idx : list des états (même ordre que les lignes/colonnes de P)
-    """
     rows, cols = len(grid), len(grid[0])
 
     # Collecter tous les états non-GOAL de la politique
@@ -137,15 +118,13 @@ def build_transition_matrix(
 # ---------------------------------------------------------------------------
 
 def distribution_at_step(pi0: np.ndarray, P: np.ndarray, n: int) -> np.ndarray:
-    """Calcule π^(n) = π^(0) · P^n via exponentiation rapide."""
+
     Pn = np.linalg.matrix_power(P, n)
     return pi0 @ Pn
 
 
 def distribution_trajectory(pi0: np.ndarray, P: np.ndarray, n_steps: int) -> np.ndarray:
-    """
-    Retourne la matrice (n_steps+1, n_states) des distributions à chaque pas.
-    """
+
     n_states = P.shape[0]
     traj = np.zeros((n_steps + 1, n_states))
     traj[0] = pi0
@@ -161,13 +140,7 @@ def distribution_trajectory(pi0: np.ndarray, P: np.ndarray, n_steps: int) -> np.
 # ---------------------------------------------------------------------------
 
 def communication_classes(P: np.ndarray, idx: List) -> Dict:
-    """
-    Identifie les classes de communication (SCC) via DFS sur le graphe orienté de P.
-    Retourne un dict avec :
-        classes    : list de frozensets d'états
-        type       : dict état -> 'transient' ou 'recurrent'
-        scc_graph  : dict classe_id -> set de classe_id atteignables
-    """
+
     n = P.shape[0]
     adj = {i: set() for i in range(n)}
     for i in range(n):
@@ -259,15 +232,7 @@ def communication_classes(P: np.ndarray, idx: List) -> Dict:
 # ---------------------------------------------------------------------------
 
 def absorption_analysis(P: np.ndarray, idx: List) -> Optional[Dict]:
-    """
-    Si GOAL_STATE (et éventuellement FAIL_STATE) sont présents :
-    décompose P = [[I 0][R Q]] et calcule :
-        N = (I-Q)^{-1}    matrice fondamentale
-        t = N·1           temps moyen d'absorption depuis chaque état transitoire
-        B = N·R           probabilités d'absorption dans chaque état absorbant
 
-    Returns None si aucun état absorbant n'est détecté.
-    """
     absorbing = [i for i, s in enumerate(idx) if s in (GOAL_STATE, FAIL_STATE)]
     transient  = [i for i in range(len(idx)) if i not in absorbing]
 
@@ -309,19 +274,7 @@ def simulate_trajectories(
     max_steps: int = 500,
     rng: Optional[np.random.Generator] = None,
 ) -> Dict:
-    """
-    Simule n_simulations trajectoires à partir de start.
 
-    Returns
-    -------
-    dict avec :
-        prob_goal      : P(atteindre GOAL)
-        prob_fail      : P(atteindre FAIL)
-        prob_timeout   : P(ni GOAL ni FAIL en max_steps pas)
-        mean_time_goal : temps moyen pour atteindre GOAL (parmi succès)
-        times_goal     : liste des temps d'atteinte de GOAL
-        hist_times     : histogramme des temps
-    """
     if rng is None:
         rng = np.random.default_rng(42)
 

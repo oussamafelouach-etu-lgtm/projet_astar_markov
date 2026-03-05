@@ -1,6 +1,4 @@
-"""
-astar.py — Planification sur grille : UCS, Greedy Best-First, A*
-"""
+
 
 import heapq
 import time
@@ -12,15 +10,11 @@ from typing import List, Tuple, Dict, Optional, Callable
 # ---------------------------------------------------------------------------
 
 def parse_grid(grid: List[List[int]]) -> Tuple[int, int]:
-    """Retourne (rows, cols) de la grille."""
     return len(grid), len(grid[0])
 
 
 def neighbors(state: Tuple[int, int], grid: List[List[int]]) -> List[Tuple[Tuple[int, int], float]]:
-    """
-    Retourne les voisins (4-connexité) accessibles avec leur coût.
-    grid[r][c] = 0 → libre, 1 → obstacle, ou coût > 1 si terrain variable.
-    """
+
     r, c = state
     rows, cols = parse_grid(grid)
     result = []
@@ -61,17 +55,7 @@ def best_first_search(
     weight_g: float = 1.0,   # 0 → Greedy, 1 → A* / UCS
     weight_h: float = 1.0,   # 0 → UCS,    1 → A* / Greedy
 ) -> Dict:
-    """
-    Recherche Best-First générique.
-    f(n) = weight_g * g(n) + weight_h * h(n)
 
-    Returns dict :
-        path        : liste de cellules (start..goal) ou [] si échec
-        cost        : coût total du chemin
-        nodes_exp   : nombre de nœuds développés (sorties de OPEN)
-        open_max    : taille max de OPEN
-        time_ms     : temps d'exécution en ms
-    """
     t0 = time.perf_counter()
 
     # OPEN : (f, g, state)
@@ -150,11 +134,7 @@ def astar_weighted(start, goal, grid, w=2.0):
 # ---------------------------------------------------------------------------
 
 def path_to_policy(path: List[Tuple[int, int]]) -> Dict[Tuple[int, int], Tuple[int, int]]:
-    """
-    À partir d'un chemin, construit un dictionnaire
-    policy[state] = next_state (action recommandée).
-    Le dernier état (goal) n'a pas d'action.
-    """
+
     policy = {}
     for i in range(len(path) - 1):
         policy[path[i]] = path[i + 1]
